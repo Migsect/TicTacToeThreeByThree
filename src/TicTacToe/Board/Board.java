@@ -3,6 +3,8 @@ package TicTacToe.Board;
 import java.util.ArrayList;
 import java.util.List;
 
+import TicTacToe.TextPicture.TextPicture;
+
 public class Board
 {
 	public static enum Mark{
@@ -20,25 +22,26 @@ public class Board
 		public int getValue(){return this.value;}
 	}
 	
-	private static final int board_size = 3;
-	private static final String horizontal_seperator = "-";
-	private static final String vertical_seperator = "|";
-	private Mark[][] places = new Mark[board_size][board_size];
+	private static final int BOARD_SIZE = 3;
+	private static final String H_SEPERATOR = "-";
+	private static final String V_SEPERATOR = "|";
+	private static final int EDGE_SPACING = 1;
+	private Mark[][] places = new Mark[BOARD_SIZE][BOARD_SIZE];
 	
 	private static List<String> getCollapsed(Mark m)
 	{
 	  List<String> ret = new ArrayList<>();
 	  
-	  for(int r = 0; r < board_size; r++)
+	  for(int r = 0; r < BOARD_SIZE; r++)
 	  {
 	  	String row = "";
-	  	for(int c = 0; c < board_size; c++)
+	  	for(int c = 0; c < BOARD_SIZE; c++)
 	  	{
 	  		row += m.getDisplay();
-	  		if(c < board_size - 1) row += m.getDisplay();
+	  		if(c < BOARD_SIZE - 1) row += m.getDisplay();
 	  	}
 	  	ret.add(row);
-	  	if(r < board_size - 1)
+	  	if(r < BOARD_SIZE - 1)
 	  	{
 	  		String seperator = "";
 	  		for(int i = 0; i < row.length(); i++) seperator += m.display;
@@ -49,11 +52,11 @@ public class Board
 	  return ret;
 	}
 	
-	public void set(int c, int r, Mark m){this.places[c % board_size][r % board_size] = m;}
-	public Mark get(int c, int r){return this.places[c % board_size][r % board_size];}
+	public void set(int c, int r, Mark m){this.places[c % BOARD_SIZE][r % BOARD_SIZE] = m;}
+	public Mark get(int c, int r){return this.places[c % BOARD_SIZE][r % BOARD_SIZE];}
 	
-	public void set(int x, Mark m){this.set(x % board_size, x / board_size, m);}
-	public Mark get(int x){return this.get(x % board_size, x / board_size);}
+	public void set(int x, Mark m){this.set(x % BOARD_SIZE, x / BOARD_SIZE, m);}
+	public Mark get(int x){return this.get(x % BOARD_SIZE, x / BOARD_SIZE);}
 	
 	public boolean isComplete()
 	{
@@ -62,37 +65,37 @@ public class Board
 	public Mark getWinner()
 	{
 		// summing rows
-		for(int c = 0; c < board_size; c++)
+		for(int c = 0; c < BOARD_SIZE; c++)
 		{
 			int sum = 0;
-			for(int r = 0; r < board_size; r++)
+			for(int r = 0; r < BOARD_SIZE; r++)
 			{
 				sum += this.get(c, r).getValue();
 			}
-			if(sum == board_size) return Mark.X;
-			if(sum == -board_size) return Mark.O;
+			if(sum == BOARD_SIZE) return Mark.X;
+			if(sum == -BOARD_SIZE) return Mark.O;
 		}
 		// getting columns
-		for(int r = 0; r < board_size; r++)
+		for(int r = 0; r < BOARD_SIZE; r++)
 		{
 			int sum = 0;
-			for(int c = 0; c < board_size; c++)
+			for(int c = 0; c < BOARD_SIZE; c++)
 			{
 				sum += this.get(c, r).getValue();
 			}
-			if(sum == board_size) return Mark.X;
-			if(sum == -board_size) return Mark.O;
+			if(sum == BOARD_SIZE) return Mark.X;
+			if(sum == -BOARD_SIZE) return Mark.O;
 		}
 		// getting diagonals
 		int sum_right = 0;
 		int sum_left = 0;
-		for(int i = 0; i < board_size; i++)
+		for(int i = 0; i < BOARD_SIZE; i++)
 		{
 			sum_right += this.get(i, i).getValue();
-			sum_left += this.get(i, board_size - i - 1).getValue();
+			sum_left += this.get(i, BOARD_SIZE - i - 1).getValue();
 		}
-		if(sum_right == board_size || sum_left == board_size) return Mark.X;
-		if(sum_right == -board_size || sum_left == -board_size) return Mark.O;
+		if(sum_right == BOARD_SIZE || sum_left == BOARD_SIZE) return Mark.X;
+		if(sum_right == -BOARD_SIZE || sum_left == -BOARD_SIZE) return Mark.O;
 		
 		return Mark.EMPTY;
 	}
@@ -100,38 +103,38 @@ public class Board
 	public String getHorizontalSeperator()
 	{
 		String row = "";
-		for(int i = 0; i < board_size; i++)
+		for(int i = 0; i < BOARD_SIZE; i++)
 		{
-			row += horizontal_seperator;
-			if(i < board_size-1) row += vertical_seperator;
+			row += H_SEPERATOR;
+			if(i < BOARD_SIZE-1) row += V_SEPERATOR;
 		}
 		return row;
 	}
-	public String getVerticalSeperator(){return vertical_seperator;}
+	public String getVerticalSeperator(){return V_SEPERATOR;}
 	
 	/**Creates a new board (not a super board)
 	 */
 	public Board()
 	{
-		for(int r = 0; r < board_size; r++) for(int c = 0; c < board_size; c++) places[c][r] = Mark.EMPTY;
+		for(int r = 0; r < BOARD_SIZE; r++) for(int c = 0; c < BOARD_SIZE; c++) places[c][r] = Mark.EMPTY;
 	}
 	
 	public List<String> toStringList()
 	{
-	  List<String> ret = new ArrayList<String>();
-	  for(int r = 0; r < board_size; r++) 
+		int picture_side = 2*BOARD_SIZE + 2*EDGE_SPACING - 1;
+	  TextPicture picture = new TextPicture(picture_side, picture_side);
+	  // drawing the marks
+	  for(int r = 0; r < BOARD_SIZE; r++) for(int c = 0; c < BOARD_SIZE; c++)
 	  {
-	  	String row = "";
-	  	for(int c = 0; c < board_size; c++)
-	  	{
-	  		row += this.get(c,r).getDisplay();
-	  		if(c < board_size-1) row += this.getVerticalSeperator();
-	  	}
-	  	ret.add(row);
-	  	if(r < board_size-1) ret.add(getHorizontalSeperator());
-	  }	
+	  	Mark m = this.get(c, r);
+	    int p_c = EDGE_SPACING + 2 * c;
+	  	int p_r = EDGE_SPACING + 2 * r;
+	  	picture.setElement(p_c, p_r, m.getDisplay().charAt(0));
+	  }
 	  
-		return ret;
+	  // drawing the lines
+	  
+		return picture.buildByRows();
 	}
 	public List<String> toDisplay()
 	{

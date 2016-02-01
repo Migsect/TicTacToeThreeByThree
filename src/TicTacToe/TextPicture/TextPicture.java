@@ -43,8 +43,6 @@ public class TextPicture
 	
 	// Mapping 
 	private List<LocatedTextPicture> inner_pictures = new ArrayList<>();
-	private List<LocatedTextPicture> inner_generators = new ArrayList<>();
-	
 	public TextPicture(int width, int height)
 	{
 		this.width = width;
@@ -87,11 +85,32 @@ public class TextPicture
 		for(int r = 0; r < this.height; r++)
 		{
 			String row = "";
-			for(int c = 0; c < this.width; c++)
+			for(int c = 0; c < this.width; c++) row += this.elements[c][r];
+		  rows.add(row);
+		}
+		for(LocatedTextPicture l_p : inner_pictures)
+		{
+			Coord coord = l_p.getCoord();
+			TextPicture p = l_p.getPicture();
+			
+			int c_start = coord.getX();
+			int r_start = coord.getY();
+			int c_stop = c_start + p.getWidth();
+			int r_stop = r_start + p.getHeight();
+			if(c_stop > this.width) c_stop = this.width;
+			if(r_stop > this.height) r_stop = this.height;
+			
+			for(int r = r_start; r < r_stop; r++)
 			{
-				
+				char[] row = rows.get(r).toCharArray();
+				for(int c = c_start; c < c_stop; c++)
+				{
+					row[c] = p.getElement(c, r);
+				}
+				rows.set(r, String.valueOf(row));
 			}
 		}
+		return rows;
 	}
 	
 }

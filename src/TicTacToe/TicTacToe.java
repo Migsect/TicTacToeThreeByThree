@@ -12,6 +12,15 @@ public class TicTacToe
 	{
 		Scanner scanner = new Scanner(System.in);
 		
+		Board board = new Board();
+		for(int x = 0; x < 3; x++) for(int y = 0; y < 3; y++)
+		{
+			if(x > 1 || y < 1) board.set(x, y, Board.Mark.X);
+			else board.set(x,y, Board.Mark.O);
+		}
+		printLines(board.toStringList());
+		
+		/*
 		Field field = new Field();
 		
 		Board.Mark current_turn = Board.Mark.X;
@@ -50,6 +59,7 @@ public class TicTacToe
 			if(current_turn.equals(Board.Mark.X)) current_turn = Board.Mark.O;
 			else current_turn = Board.Mark.X;
 		}
+		*/
 	}
 	
 	public static void printLines(List<String> lines)
