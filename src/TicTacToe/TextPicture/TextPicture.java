@@ -1,15 +1,13 @@
 package TicTacToe.TextPicture;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class TextPicture
 {
 	private static final char EMPTY_SPACE = ' ';
 	
-	public class Coord
+	public static class Coord
 	{
 		private final int x;
 		private final int y;
@@ -82,35 +80,43 @@ public class TextPicture
 	public List<String> buildByRows()
 	{
 		List<String> rows = new ArrayList<>();
+		TextPicture collapsed = this.collapse();
 		for(int r = 0; r < this.height; r++)
 		{
 			String row = "";
-			for(int c = 0; c < this.width; c++) row += this.elements[c][r];
+			for(int c = 0; c < this.width; c++) row += collapsed.elements[c][r];
 		  rows.add(row);
 		}
-		for(LocatedTextPicture l_p : inner_pictures)
+		return rows;
+	}
+	public TextPicture collapse()
+	{
+		TextPicture collapsed = new TextPicture(this.width, this.height);
+		for(int x = 0; x < this.width; x++) for(int y = 0; y < this.height; y++)
+		{
+			collapsed.setElement(x, y, this.getElement(x, y));
+		}
+		if(this.inner_pictures.size() < 1) return collapsed;
+		for(LocatedTextPicture l_p : this.inner_pictures)
 		{
 			Coord coord = l_p.getCoord();
-			TextPicture p = l_p.getPicture();
+			TextPicture picture = l_p.getPicture().collapse();
 			
 			int c_start = coord.getX();
 			int r_start = coord.getY();
-			int c_stop = c_start + p.getWidth();
-			int r_stop = r_start + p.getHeight();
+			int c_stop = c_start + picture.getWidth();
+			int r_stop = r_start + picture.getHeight();
 			if(c_stop > this.width) c_stop = this.width;
 			if(r_stop > this.height) r_stop = this.height;
 			
-			for(int r = r_start; r < r_stop; r++)
+			for(int c = c_start; c < c_stop; c++) for(int r = r_start; r < r_stop; r++)
 			{
-				char[] row = rows.get(r).toCharArray();
-				for(int c = c_start; c < c_stop; c++)
-				{
-					row[c] = p.getElement(c, r);
-				}
-				rows.set(r, String.valueOf(row));
+				int inner_c = c - c_start;
+				int inner_r = r - r_start;
+				collapsed.setElement(c, r, picture.getElement(inner_c, inner_r));
 			}
 		}
-		return rows;
+		return collapsed;
 	}
 	
 }

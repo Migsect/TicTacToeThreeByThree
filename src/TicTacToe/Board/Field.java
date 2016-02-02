@@ -1,21 +1,24 @@
 package TicTacToe.Board;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import TicTacToe.Board.Board.Mark;
+import TicTacToe.TextPicture.TextPicture;
+import TicTacToe.TextPicture.TextPicture.Coord;
 
 public class Field
 {
 	private static final int field_size = 3;
-	private static final String h_seperator = ":";
-	private static final String v_seperator = ".";
-	private static final String selection_h_seperator = "#";
-	private static final String selection_v_seperator = "#";
+	//private static final char H_SEPERATOR = '=';
+	//private static final char V_SEPERATOR = '|';
+	private static final char SELECTED = '#';
+	private static final char UNSELECTED = ' ';
+	private static final int SELECT_SPACING = 1;
+	private static final int EDGE_SPACING = 1;
 	
 	private Board[][] boards = new Board[field_size][field_size];
 	// selected board has an interval of [0, field_size*field_size - 1]
-	private int selected_board = field_size * (field_size / 2) + (field_size / 2); // the selected board
+	private int selected_board = field_size * (field_size / 2) + (field_size / 2) + 1; // the selected board
 	
 	/**Checks to see if the board is complete
 	 * If it is this will return true
@@ -80,6 +83,17 @@ public class Field
 	 */
 	public Field select(int x){this.selected_board = x % (field_size*field_size); return this;}
 	
+	/**Returns the column that is selected
+	 * 
+	 * @return The selected column
+	 */
+	public int getSelectedColumn(){return (this.selected_board - 1) % Field.field_size;}
+	/**Returns the row that is selected
+	 * 
+	 * @return The selected row
+	 */
+	public int getSelectedRow(){return (this.selected_board - 1) / Field.field_size;}
+	
 	/**Generates a new empty field
 	 * 
 	 */
@@ -94,28 +108,57 @@ public class Field
 	 */
 	public List<String> toStringList()
 	{
-		List<String> ret = new ArrayList<>();
-		for(int r = 0; r < field_size; r++)
+		// Creating all the cells
+		TextPicture[][] cells = new TextPicture[Field.field_size][Field.field_size];
+		for(int r = 0; r < Field.field_size; r++) for(int c = 0; c < Field.field_size; c++)
 		{
-			List<String> rows = new ArrayList<>();
-			for(int c = 0; c < field_size; c++)
+			TextPicture board = this.getBoard(r,c).toDisplay();
+			TextPicture select_space_board = new TextPicture(board.getHeight() + 2 * Field.SELECT_SPACING, board.getWidth() + 2 * Field.SELECT_SPACING);
+			
+			// Filling the cell with the selection character if it is selected
+			boolean do_fill = this.getSelectedRow() == r && this.getSelectedColumn() == c; // If we fill the space with the selection character
+			for(int b_r = 0; b_r < select_space_board.getHeight(); b_r++) for(int b_c = 0; b_c < select_space_board.getHeight(); b_c++)
 			{
-				List<String> board_rows = this.getBoard(c, r).toDisplay();
-				while(rows.size() < board_rows.size()) rows.add("");
-				for(int i = 0; i < board_rows.size(); i++)
-				{
-					rows.set(i, rows.get(i) + board_rows.get(i));
-					if(c < field_size - 1) rows.set(i, rows.get(i) + v_seperator);
-				}
+				if(do_fill) select_space_board.setElement(b_c, b_r, Field.SELECTED);
+				else select_space_board.setElement(b_c, b_r, Field.UNSELECTED);
 			}
-			if(r < field_size - 1)
+			try // Adding board to the select_space_baord
 			{
-				String seperator = "";
-				for(int i = 0; i < rows.get(0).length(); i++) seperator += h_seperator;
-				rows.add(seperator);
+				select_space_board.set(new Coord(Field.SELECT_SPACING, Field.SELECT_SPACING), board);
 			}
-			for(String s : rows) ret.add(s);
+			catch (Exception e){e.printStackTrace();}
+			cells[r][c] = select_space_board;
 		}
-		return ret;
+
+		int cell_size = Field.SELECT_SPACING * 2 + Board.boardLength();
+		int field_size = Field.field_size * cell_size  + Field.field_size - 1;
+		TextPicture field = new TextPicture(field_size, field_size);
+		// adding the cells to their locations
+		for(int r = 0; r < Field.field_size; r++) for(int c = 0; c < Field.field_size; c++)
+		{
+			int coord_r = r * (cell_size + 1);
+			int coord_c = c * (cell_size + 1);
+			try
+			{
+				field.set(new Coord(coord_r, coord_c), cells[r][c]);
+				System.out.println("Setting cell to (" +r + ", " + c+ ")");
+			}
+			catch (Exception e){e.printStackTrace();}
+		}
+		TextPicture space_field = new TextPicture(field_size + 2 * Field.EDGE_SPACING, field_size + 2 * Field.EDGE_SPACING);
+		boolean do_fill = this.selected_board == 0;
+		for(int r = 0; r < space_field.getHeight(); r++) for(int c = 0; c < space_field.getWidth(); c++)
+		{
+			if(do_fill) space_field.setElement(c, r, Field.SELECTED);
+		}
+		try
+		{
+			space_field.set(new Coord(Field.EDGE_SPACING , Field.EDGE_SPACING), field);
+		}
+		catch (Exception e){e.printStackTrace();}
+		
+		
+		
+		return space_field.buildByRows();
 	}
 }

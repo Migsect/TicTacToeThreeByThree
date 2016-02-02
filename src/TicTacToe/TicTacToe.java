@@ -10,7 +10,7 @@ public class TicTacToe
 {
 	static public void main(String[] argv)
 	{
-		Scanner scanner = new Scanner(System.in);
+		//Scanner scanner = new Scanner(System.in);
 		
 		Board board = new Board();
 		for(int x = 0; x < 3; x++) for(int y = 0; y < 3; y++)
@@ -19,6 +19,10 @@ public class TicTacToe
 			else board.set(x,y, Board.Mark.O);
 		}
 		printLines(board.toStringList());
+		
+		Field field = new Field();
+		field.select(0);
+		printLines(field.toStringList());
 		
 		/*
 		Field field = new Field();

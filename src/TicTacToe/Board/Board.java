@@ -1,6 +1,5 @@
 package TicTacToe.Board;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import TicTacToe.TextPicture.TextPicture;
@@ -23,34 +22,25 @@ public class Board
 	}
 	
 	private static final int BOARD_SIZE = 3;
-	private static final String H_SEPERATOR = "-";
-	private static final String V_SEPERATOR = "|";
+	private static final char H_SEPERATOR = '=';
+	private static final char V_SEPERATOR = '|';
 	private static final int EDGE_SPACING = 1;
 	private Mark[][] places = new Mark[BOARD_SIZE][BOARD_SIZE];
 	
-	private static List<String> getCollapsed(Mark m)
+	public static int boardLength(){return 2*BOARD_SIZE + 2*EDGE_SPACING - 1;}
+	
+	private static TextPicture getCollapsedPicture(Mark m)
 	{
-	  List<String> ret = new ArrayList<>();
-	  
-	  for(int r = 0; r < BOARD_SIZE; r++)
+		int picture_side = boardLength();
+	  TextPicture picture = new TextPicture(picture_side, picture_side);
+	  for(int r = EDGE_SPACING; r < BOARD_SIZE + EDGE_SPACING; r++) for(int c = EDGE_SPACING; c < BOARD_SIZE + EDGE_SPACING; c++)
 	  {
-	  	String row = "";
-	  	for(int c = 0; c < BOARD_SIZE; c++)
-	  	{
-	  		row += m.getDisplay();
-	  		if(c < BOARD_SIZE - 1) row += m.getDisplay();
-	  	}
-	  	ret.add(row);
-	  	if(r < BOARD_SIZE - 1)
-	  	{
-	  		String seperator = "";
-	  		for(int i = 0; i < row.length(); i++) seperator += m.display;
-	  		ret.add(seperator);
-	  	}
+	  	picture.setElement(c, r, m.getDisplay().charAt(0));
 	  }
 	  
-	  return ret;
+	  return picture;
 	}
+	//private static List<String> getCollapsed(Mark m){return getCollapsedPicture(m).buildByRows();}
 	
 	public void set(int c, int r, Mark m){this.places[c % BOARD_SIZE][r % BOARD_SIZE] = m;}
 	public Mark get(int c, int r){return this.places[c % BOARD_SIZE][r % BOARD_SIZE];}
@@ -100,18 +90,6 @@ public class Board
 		return Mark.EMPTY;
 	}
 	
-	public String getHorizontalSeperator()
-	{
-		String row = "";
-		for(int i = 0; i < BOARD_SIZE; i++)
-		{
-			row += H_SEPERATOR;
-			if(i < BOARD_SIZE-1) row += V_SEPERATOR;
-		}
-		return row;
-	}
-	public String getVerticalSeperator(){return V_SEPERATOR;}
-	
 	/**Creates a new board (not a super board)
 	 */
 	public Board()
@@ -119,9 +97,10 @@ public class Board
 		for(int r = 0; r < BOARD_SIZE; r++) for(int c = 0; c < BOARD_SIZE; c++) places[c][r] = Mark.EMPTY;
 	}
 	
-	public List<String> toStringList()
+	public List<String> toStringList(){return this.toPicture().buildByRows();}
+	public TextPicture toPicture()
 	{
-		int picture_side = 2*BOARD_SIZE + 2*EDGE_SPACING - 1;
+		int picture_side = boardLength();
 	  TextPicture picture = new TextPicture(picture_side, picture_side);
 	  // drawing the marks
 	  for(int r = 0; r < BOARD_SIZE; r++) for(int c = 0; c < BOARD_SIZE; c++)
@@ -132,13 +111,23 @@ public class Board
 	  	picture.setElement(p_c, p_r, m.getDisplay().charAt(0));
 	  }
 	  
-	  // drawing the lines
-	  
-		return picture.buildByRows();
+	  // drawing the horizontal lines
+	  for(int r = EDGE_SPACING + 1; r < 2 * BOARD_SIZE + EDGE_SPACING - 1; r+=2) for(int c = EDGE_SPACING; c < 2 * BOARD_SIZE + EDGE_SPACING - 1; c++)
+	  {
+	  	picture.setElement(c, r, H_SEPERATOR);
+	  	//System.out.println("Setting (" + c + ", " + r + ") to element '" + H_SEPERATOR + "'");
+	  }
+	  // drawing the vertical lines
+	  for(int r = EDGE_SPACING ; r < 2 * BOARD_SIZE + EDGE_SPACING - 1; r++) for(int c = EDGE_SPACING + 1; c < 2 * BOARD_SIZE + EDGE_SPACING - 1; c+=2)
+	  {
+	  	picture.setElement(c, r, V_SEPERATOR);
+	  	//System.out.println("Setting (" + c + ", " + r + ") to element '" + V_SEPERATOR + "'");
+	  }
+	  return picture;
 	}
-	public List<String> toDisplay()
+	public TextPicture toDisplay()
 	{
-		if(this.isComplete()) return Board.getCollapsed(this.getWinner());
-		else return this.toStringList();
+		if(this.isComplete()) return Board.getCollapsedPicture(this.getWinner());
+		else return this.toPicture();
 	}
 }
