@@ -1,5 +1,6 @@
 package TicTacToe.Board;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import TicTacToe.TextPicture.TextPicture;
@@ -33,7 +34,7 @@ public class Board
 	{
 		int picture_side = boardLength();
 	  TextPicture picture = new TextPicture(picture_side, picture_side);
-	  for(int r = EDGE_SPACING; r < BOARD_SIZE + EDGE_SPACING; r++) for(int c = EDGE_SPACING; c < BOARD_SIZE + EDGE_SPACING; c++)
+	  for(int r = EDGE_SPACING; r < BOARD_SIZE + 2*EDGE_SPACING + 1; r++) for(int c = EDGE_SPACING; c < BOARD_SIZE + 2*EDGE_SPACING + 1; c++)
 	  {
 	  	picture.setElement(c, r, m.getDisplay().charAt(0));
 	  }
@@ -45,8 +46,8 @@ public class Board
 	public void set(int c, int r, Mark m){this.places[c % BOARD_SIZE][r % BOARD_SIZE] = m;}
 	public Mark get(int c, int r){return this.places[c % BOARD_SIZE][r % BOARD_SIZE];}
 	
-	public void set(int x, Mark m){this.set(x % BOARD_SIZE, x / BOARD_SIZE, m);}
-	public Mark get(int x){return this.get(x % BOARD_SIZE, x / BOARD_SIZE);}
+	public void set(int x, Mark m){this.set((x-1) % BOARD_SIZE, (x-1) / BOARD_SIZE, m);}
+	public Mark get(int x){return this.get((x-1) % BOARD_SIZE, (x-1) / BOARD_SIZE);}
 	
 	public boolean isComplete()
 	{
@@ -129,5 +130,16 @@ public class Board
 	{
 		if(this.isComplete()) return Board.getCollapsedPicture(this.getWinner());
 		else return this.toPicture();
+	}
+	public List<String> getInformation()
+	{
+		List<String> strings = new ArrayList<>();
+		
+		strings.add("Board:");
+		strings.add("  isComplete: " + this.isComplete());
+		strings.add("  getWinner: '" + this.getWinner() + "'");
+		strings.addAll(this.toStringList());
+		
+		return strings;
 	}
 }

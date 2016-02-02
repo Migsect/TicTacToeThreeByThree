@@ -1,5 +1,6 @@
 package TicTacToe.Board;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import TicTacToe.Board.Board.Mark;
@@ -17,7 +18,7 @@ public class Field
 	private static final int EDGE_SPACING = 1;
 	
 	private Board[][] boards = new Board[field_size][field_size];
-	// selected board has an interval of [0, field_size*field_size - 1]
+	// selected board has an interval of [0, field_size*field_size]
 	private int selected_board = field_size * (field_size / 2) + (field_size / 2) + 1; // the selected board
 	
 	/**Checks to see if the board is complete
@@ -61,13 +62,13 @@ public class Field
 	 * @param x An index
 	 * @return A board object
 	 */
-	public Board getBoard(int x){return this.getBoard(x % field_size, x / field_size);}
+	public Board getBoard(int x){return this.getBoard((x-1) % field_size, (x-1) / field_size);}
 	/**Returns the currently selected board.
 	 * A new board can be selected by using the ".select()" method
 	 * 
 	 * @return A board object
 	 */
-	public Board getBoard(){return this.getBoard(this.selected_board);}
+	public Board getBoard(){return this.getBoard(this.getSelected());}
 	
 	/**Will set the selected board based on the inputted column and row
 	 * 
@@ -75,31 +76,51 @@ public class Field
 	 * @param r The row
 	 * @return The field object that this method was called on
 	 */
-	public Field select(int c, int r){this.select(c + field_size * r); return this;}
+	public Field select(int c, int r){this.select(c + field_size * r + 1); return this;}
 	/**Sets the selected table to the specified index
 	 * 
 	 * @param x The index of the table to select
 	 * @return The field object that this method was called on
 	 */
-	public Field select(int x){this.selected_board = x % (field_size*field_size); return this;}
+	public Field select(int x){this.selected_board = x; return this;}
 	
+	/**Returns the selected board index
+	 * This will return values ranging from 0 to 9
+	 * where 0 specifies that there is not a selected board
+	 * 
+	 * @return The selected index
+	 */
+	public int getSelected(){return this.selected_board;}
 	/**Returns the column that is selected
+	 * Returns -1 if there is not a selected board
 	 * 
 	 * @return The selected column
 	 */
-	public int getSelectedColumn(){return (this.selected_board - 1) % Field.field_size;}
+	public int getSelectedColumn()
+	{
+		if(this.selected_board == 0) return -1;
+		return (this.selected_board - 1) % Field.field_size;
+	}
 	/**Returns the row that is selected
-	 * 
+	 * Returns -1 if there is not a selected board
+	 *  
 	 * @return The selected row
 	 */
-	public int getSelectedRow(){return (this.selected_board - 1) / Field.field_size;}
+	public int getSelectedRow()
+	{
+		if(this.selected_board == 0) return -1;
+		return (this.selected_board - 1) / Field.field_size;
+	}
 	
 	/**Generates a new empty field
 	 * 
 	 */
 	public Field()
 	{
-		for(int c = 0; c < field_size; c++) for(int r = 0; r < field_size; r++) this.boards[c][r] = new Board();
+		for(int c = 0; c < field_size; c++) 
+		{
+			for(int r = 0; r < field_size; r++) this.boards[c][r] = new Board();
+		}
 	}
 	
 	/**Converts the field into displayable a string list
@@ -112,7 +133,7 @@ public class Field
 		TextPicture[][] cells = new TextPicture[Field.field_size][Field.field_size];
 		for(int r = 0; r < Field.field_size; r++) for(int c = 0; c < Field.field_size; c++)
 		{
-			TextPicture board = this.getBoard(r,c).toDisplay();
+			TextPicture board = this.getBoard(c,r).toDisplay();
 			TextPicture select_space_board = new TextPicture(board.getHeight() + 2 * Field.SELECT_SPACING, board.getWidth() + 2 * Field.SELECT_SPACING);
 			
 			// Filling the cell with the selection character if it is selected
@@ -127,7 +148,7 @@ public class Field
 				select_space_board.set(new Coord(Field.SELECT_SPACING, Field.SELECT_SPACING), board);
 			}
 			catch (Exception e){e.printStackTrace();}
-			cells[r][c] = select_space_board;
+			cells[c][r] = select_space_board;
 		}
 
 		int cell_size = Field.SELECT_SPACING * 2 + Board.boardLength();
@@ -141,7 +162,7 @@ public class Field
 			try
 			{
 				field.set(new Coord(coord_r, coord_c), cells[r][c]);
-				System.out.println("Setting cell to (" +r + ", " + c+ ")");
+				// System.out.println("Setting cell to (" +r + ", " + c+ ")");
 			}
 			catch (Exception e){e.printStackTrace();}
 		}
@@ -160,5 +181,21 @@ public class Field
 		
 		
 		return space_field.buildByRows();
+	}
+	
+	/**Returns a list of strings that describe the state of the field and not the sub-boards
+	 * 
+	 * @return A list of strings
+	 */
+	public List<String> getInformation()
+	{
+		List<String> strings = new ArrayList<>();
+		
+		strings.add("Field:");
+		strings.add("  Selected Board: " + this.getSelected());
+		strings.add("  Selected Column: " + this.getSelectedColumn());
+		strings.add("  Selected Row: " + this.getSelectedRow());
+		
+		return strings;
 	}
 }
