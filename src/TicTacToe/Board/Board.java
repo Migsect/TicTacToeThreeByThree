@@ -7,6 +7,9 @@ import TicTacToe.TextPicture.TextPicture;
 
 public class Board
 {
+	/**Used to representing marks on the board
+	 * As well as to represent players.
+	 */
 	public static enum Mark{
 		EMPTY (" ", 0),
 		X ("X", 1),
@@ -28,8 +31,17 @@ public class Board
 	private static final int EDGE_SPACING = 1;
 	private Mark[][] places = new Mark[BOARD_SIZE][BOARD_SIZE];
 	
+	/**Returns the length of the board's display with its edge spacing.
+	 * 
+	 * @return The length of a displayed board
+	 */
 	public static int boardLength(){return 2*BOARD_SIZE + 2*EDGE_SPACING - 1;}
 	
+	/**Returns the collapsed text picture of the board with the mark m
+	 * 
+	 * @param m The mark to fill the collapsed board
+	 * @return A text picture of the collapsed board
+	 */
 	private static TextPicture getCollapsedPicture(Mark m)
 	{
 		int picture_side = boardLength();
@@ -41,18 +53,50 @@ public class Board
 	  
 	  return picture;
 	}
-	//private static List<String> getCollapsed(Mark m){return getCollapsedPicture(m).buildByRows();}
 	
+	/**Sets a mark on the board to the location
+	 * 
+	 * @param c The column
+	 * @param r The row
+	 * @param m The mark
+	 */
 	public void set(int c, int r, Mark m){this.places[c % BOARD_SIZE][r % BOARD_SIZE] = m;}
+	/**Gets the mark at a location on the board
+	 * 
+	 * @param c The column
+	 * @param r The row
+	 * @return The mark
+	 */
 	public Mark get(int c, int r){return this.places[c % BOARD_SIZE][r % BOARD_SIZE];}
 	
+	/**Sets a mark based on the board's index (1 to size*size)
+	 * 
+	 * @param x The index
+	 * @param m The mark
+	 */
 	public void set(int x, Mark m){this.set((x-1) % BOARD_SIZE, (x-1) / BOARD_SIZE, m);}
+	/**Gets a mark based on the inputted index (1 to size*size)
+	 * 
+	 * @param x The index
+	 * @return The mark
+	 */
 	public Mark get(int x){return this.get((x-1) % BOARD_SIZE, (x-1) / BOARD_SIZE);}
 	
+	/**Checks to see if the board is completed
+	 * 
+	 * @return
+	 */
 	public boolean isComplete()
 	{
-	  return !this.getWinner().equals(Mark.EMPTY);
+	  if(!this.getWinner().equals(Mark.EMPTY)) return true;
+		for(Mark[] a : this.places) for(Mark m : a) if(m.equals(Mark.EMPTY)) return false;
+	  return true;
 	}
+	/**Gets the winner if there is one
+	 * Else it will return an empty mark
+	 * 
+	 * @return The mark of the winner
+	 */
 	public Mark getWinner()
 	{
 		// summing rows
@@ -98,7 +142,15 @@ public class Board
 		for(int r = 0; r < BOARD_SIZE; r++) for(int c = 0; c < BOARD_SIZE; c++) places[c][r] = Mark.EMPTY;
 	}
 	
+	/**Gets the board as a string list for displaying
+	 * 
+	 * @return A string list representing the board
+	 */
 	public List<String> toStringList(){return this.toPicture().buildByRows();}
+	/**Gets the board as a text picture for displaying and manipulation
+	 * 
+	 * @return A text picture representing the board
+	 */
 	public TextPicture toPicture()
 	{
 		int picture_side = boardLength();
@@ -126,11 +178,19 @@ public class Board
 	  }
 	  return picture;
 	}
+	/**Returns a display version of the board that will collapse the board if it is complete
+	 * 
+	 * @return A text picture of the board display
+	 */
 	public TextPicture toDisplay()
 	{
 		if(this.isComplete()) return Board.getCollapsedPicture(this.getWinner());
 		else return this.toPicture();
 	}
+	/**Gets a list of strings that display some information about the board
+	 * 
+	 * @return list of strings
+	 */
 	public List<String> getInformation()
 	{
 		List<String> strings = new ArrayList<>();

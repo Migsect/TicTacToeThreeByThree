@@ -19,6 +19,11 @@ public class TextPicture
 		public boolean equals(Coord other){return this.x == other.x && this.y == other.y;}
 		public Object clone(){return this;} // because the coord is a final object in its variables
 	}
+	/** A pair of text picture coord
+	 * 
+	 * @author Alex
+	 *
+	 */
 	private class LocatedTextPicture
 	{
 		private final Coord c;
@@ -41,6 +46,11 @@ public class TextPicture
 	
 	// Mapping 
 	private List<LocatedTextPicture> inner_pictures = new ArrayList<>();
+	/**Constructs a TextPicture of width and height filled with space
+	 * 
+	 * @param width
+	 * @param height
+	 */
 	public TextPicture(int width, int height)
 	{
 		this.width = width;
@@ -65,11 +75,36 @@ public class TextPicture
 		return this;
 	}
 	
+	/**Gets the width of the picture
+	 * 
+	 * @return The width of the picture
+	 */
 	public int getWidth(){return this.width;}
+	/**Gets the height of the picture
+	 * 
+	 * @return The height of the picture
+	 */
 	public int getHeight(){return this.height;}
+	/**Returns the character at the column and row
+	 * 
+	 * @param c The column
+	 * @param r The row
+	 * @return The character at the position
+	 */
 	public char getElement(int c, int r){return this.elements[c % width][r % height];}
+	/**Sets a character in the picture
+	 * 
+	 * @param c The column
+	 * @param r The row
+	 * @param e The character
+	 * @return The textpicture object for smiles
+	 */
 	public TextPicture setElement(int c, int r, char e){this.elements[c % width][r % height] = e; return this;}
 	
+	/**Combines the picture into a singular string seperated with newlines
+	 * 
+	 * @return A string of the picture
+	 */
 	public String build()
 	{
 		String s = "";
@@ -77,6 +112,10 @@ public class TextPicture
 		for(String r : rows) s += r + '\n';
 		return s;
 	}
+	/**Returns a list of strings that are the picture
+	 * 
+	 * @return A list of strings that are the picture
+	 */
 	public List<String> buildByRows()
 	{
 		List<String> rows = new ArrayList<>();
@@ -89,6 +128,10 @@ public class TextPicture
 		}
 		return rows;
 	}
+	/**Collapses all the inner pictures into a singualr text picture
+	 * 
+	 * @return A collapsed text picture
+	 */
 	public TextPicture collapse()
 	{
 		TextPicture collapsed = new TextPicture(this.width, this.height);

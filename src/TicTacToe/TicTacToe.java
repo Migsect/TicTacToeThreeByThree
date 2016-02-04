@@ -9,6 +9,11 @@ import TicTacToe.Board.Field;
 
 public class TicTacToe
 {
+	/**Translates num pad inputs to indexes
+	 * 
+	 * @param input numpad input
+	 * @return The input as index
+	 */
 	static public int inputToIndex(int input)
 	{
 		switch (input)
@@ -25,6 +30,10 @@ public class TicTacToe
 		  default: return 0;
 		}
 	}
+	/**Main method
+	 * 
+	 * @param argv command line arguments
+	 */
 	static public void main(String[] argv)
 	{
 		// Creating the input scanner
@@ -97,6 +106,9 @@ public class TicTacToe
 			}
 			if(!field.getWinner().equals(Mark.EMPTY))
 			{
+				// Displaying the final state of the field
+				printLines(field.toStringList());
+				// Saying who won!
 				System.out.println("Player " + field.getWinner().getDisplay() + " is the winner!");
 				break;
 			}
@@ -104,48 +116,12 @@ public class TicTacToe
 		}
 		
 		scanner.close();
-		/*
-		Field field = new Field();
-		
-		Board.Mark current_turn = Board.Mark.X;
-		int current_board = 5;
-		
-		String line_input = "";
-		while(!line_input.equals("e"))
-		{
-			System.out.println();
-			printLines(field.toStringList());
-			
-			// Input Scanning
-			System.out.println("It is " + current_turn.getDisplay() + "'s turn");
-			line_input = scanner.nextLine();
-			int selection = -1;
-			while(selection == -1 && !line_input.equals("e") &&
-					!field.getBoard(current_board - 1).get(selection).equals(Board.Mark.EMPTY))
-			{
-  			try
-  			{
-  				selection = Integer.parseInt(line_input);
-  			}
-  			catch(NumberFormatException e){;}
-  			if(selection < 1 || selection > 9)
-  			{
-  				System.out.println("Please enter a number from 1 to 9.  If you wish to exit then enter 'e'");
-  			}
-  			if(!field.getBoard(current_board - 1).get(selection).equals(Board.Mark.EMPTY))
-  			{
-  				System.out.println("Please select a not filled space!");
-  			}
-			}
-			// setting the board as we got a good input
-			field.getBoard(current_board - 1).set(selection - 1, current_turn);
-			current_board = selection;
-			if(current_turn.equals(Board.Mark.X)) current_turn = Board.Mark.O;
-			else current_turn = Board.Mark.X;
-		}
-		*/
 	}
 	
+	/**Printing all the lines of the string list input
+	 * 
+	 * @param lines The lines to print
+	 */
 	public static void printLines(List<String> lines)
 	{
 		for(String s : lines) System.out.println(s);
