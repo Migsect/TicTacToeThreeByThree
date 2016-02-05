@@ -3,12 +3,22 @@ package TicTacToe.Board;
 import java.util.ArrayList;
 import java.util.List;
 
+import TicTacToe.Board.Board.Location;
 import TicTacToe.Board.Board.Mark;
 import TicTacToe.TextPicture.TextPicture;
 import TicTacToe.TextPicture.TextPicture.Coord;
 
 public class Field
 {
+	public static class Move
+	{
+		private final Board.Location loc; // the board to select
+		private final Board.Move move;
+		public Move(Board.Move move, Board.Location loc){this.loc = loc; this.move = move;}
+		public Board.Location getLocation(){return loc;}
+		public Board.Move getMove(){return move;}
+	}
+	
 	private static final int field_size = 3;
 	//private static final char H_SEPERATOR = '=';
 	//private static final char V_SEPERATOR = '|';
@@ -20,6 +30,20 @@ public class Field
 	private Board[][] boards = new Board[field_size][field_size];
 	// selected board has an interval of [0, field_size*field_size]
 	private int selected_board = field_size * (field_size / 2) + (field_size / 2) + 1; // the selected board
+	private Mark current_turn = Mark.EMPTY;
+	
+	/**Sets the current turn to the mark m
+	 * 
+	 * @param m The mark to set the turn to
+	 * @return The field object that was set
+	 */
+	public Field setTurn(Mark m){this.current_turn = m; return this;}
+	
+	/**Gets the current turn of the field
+	 * 
+	 * @return The turn
+	 */
+	public Mark getTurn(){return this.current_turn;}
 	
 	/**Checks to see if the board is complete
 	 * If it is this will return true
@@ -62,7 +86,11 @@ public class Field
 	 * @param x An index
 	 * @return A board object
 	 */
-	public Board getBoard(int x){return this.getBoard((x-1) % field_size, (x-1) / field_size);}
+	public Board getBoard(int x)
+	{
+		if(x == 0) return null;
+		return this.getBoard((x-1) % field_size, (x-1) / field_size);
+	}
 	/**Returns the currently selected board.
 	 * A new board can be selected by using the ".select()" method
 	 * 
@@ -197,5 +225,26 @@ public class Field
 		strings.add("  Selected Row: " + this.getSelectedRow());
 		
 		return strings;
+	}
+	public Location[] getBoardLocations()
+	{
+		List<Location> boards = new ArrayList<>();
+		
+		
+		return (Location[])boards.toArray();
+	}
+	public Location[] getCompleteBoards()
+	{
+		List<Location> boards = new ArrayList<>();
+		
+		
+		return (Location[])boards.toArray();
+	}
+	public Location[] getIncompleteBoards()
+	{
+		List<Location> boards = new ArrayList<>();
+		
+		
+		return (Location[])boards.toArray();
 	}
 }
