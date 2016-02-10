@@ -32,7 +32,28 @@ public class Field
 	private int selected_board = field_size * (field_size / 2) + (field_size / 2) + 1; // the selected board
 	private Mark current_turn = Mark.EMPTY;
 	
+	/**Makes a move
+	 * This will mutate the field it is made on
+	 * This will also apply the rules to the move
+	 * 
+	 * @param move The move that will be made
+	 * @return The field the move was made on
+	 */
+	public Field makeMove(Field.Move move)
+	{
+		// Updating the field with the new move
+		this.getBoard(move.getLocation()).set(move.getMove()); 
+		// Updating the current turn
+		this.current_turn = this.current_turn.getOpposite();
+		// Updating the selected board
+		this.select(move.getMove().getLocation().getCol(), move.getMove().getLocation().getRow());
+		
+		// Returning this field
+		return this;
+	}
+	
 	/**Sets the current turn to the mark m
+	 * This will mutate the field it is made on
 	 * 
 	 * @param m The mark to set the turn to
 	 * @return The field object that was set
@@ -73,6 +94,7 @@ public class Field
 		}
 		return board;
 	}
+	
 	/**Returns a board based on the column (x) and row (y) specified
 	 * 
 	 * @param c The column
@@ -80,6 +102,7 @@ public class Field
 	 * @return A board object
 	 */
 	public Board getBoard(int c, int r){return this.boards[c % field_size][r % field_size];}
+	
 	/**Returns a board based on the index of the board where columns increment
 	 * by 1 and rows increment by field_size (number of elements per row)
 	 * 
@@ -91,6 +114,14 @@ public class Field
 		if(x == 0) return null;
 		return this.getBoard((x-1) % field_size, (x-1) / field_size);
 	}
+	
+	/**Returns the board at the location
+	 * 
+	 * @param l The location to get the board at
+	 * @return The board at the location
+	 */
+	public Board getBoard(Location l){return this.getBoard(l.getCol(), l.getRow());}
+	
 	/**Returns the currently selected board.
 	 * A new board can be selected by using the ".select()" method
 	 * 
@@ -105,6 +136,7 @@ public class Field
 	 * @return The field object that this method was called on
 	 */
 	public Field select(int c, int r){this.select(c + field_size * r + 1); return this;}
+	
 	/**Sets the selected table to the specified index
 	 * 
 	 * @param x The index of the table to select
@@ -119,6 +151,17 @@ public class Field
 	 * @return The selected index
 	 */
 	public int getSelected(){return this.selected_board;}
+	
+	/**Get the selected board as a location
+	 * 
+	 * @return The selected location, returns null if the selected is all
+	 */
+	public Location getSelectedLocation()
+	{
+		if(this.getSelected() == 0) return null;
+		else return new Location(this.getSelectedColumn(), this.getSelectedRow());
+	}
+	
 	/**Returns the column that is selected
 	 * Returns -1 if there is not a selected board
 	 * 
@@ -129,6 +172,7 @@ public class Field
 		if(this.selected_board == 0) return -1;
 		return (this.selected_board - 1) % Field.field_size;
 	}
+	
 	/**Returns the row that is selected
 	 * Returns -1 if there is not a selected board
 	 *  
@@ -226,25 +270,76 @@ public class Field
 		
 		return strings;
 	}
+	/**Gets all the locations of the boards
+	 * This will generally return field_size * field_size elements
+	 * 
+	 * @return An array of all board locations
+	 */
 	public Location[] getBoardLocations()
 	{
 		List<Location> boards = new ArrayList<>();
 		
+		for(int c = 0; c < Field.field_size; c++) for(int r = 0; r < Field.field_size; r++) boards.add(new Board.Location(c, r));
 		
 		return (Location[])boards.toArray();
 	}
-	public Location[] getCompleteBoards()
+	
+	/**Returns all the board locations that are completed.
+	 * 
+	 * @return An array of all complete boards
+	 */
+	public Location[] getCompleteBoardLocations()
 	{
 		List<Location> boards = new ArrayList<>();
 		
+		for(Location l : this.getBoardLocations()) if(this.getBoard(l.getCol(), l.getRow()).isComplete()) boards.add(l);
 		
 		return (Location[])boards.toArray();
 	}
-	public Location[] getIncompleteBoards()
+	
+	/**Returns all the board locations that are still incomplete
+	 * 
+	 * @return An array of all incomplete boards
+	 */
+	public Location[] getIncompleteBoardLocations()
 	{
 		List<Location> boards = new ArrayList<>();
 		
+		for(Location l : this.getBoardLocations()) if(!this.getBoard(l.getCol(), l.getRow()).isComplete()) boards.add(l);
 		
 		return (Location[])boards.toArray();
+	}
+	
+	/**Gets all the boards in the field
+	 * 
+	 * @return The boards in the field
+	 */
+	public Board[] getBoards(){return this.getBoards(this.getBoardLocations());}
+	
+	/**Gets all the boards in the field at the listed locations
+	 * 
+	 * @param locations The locations of the boards
+	 * @return The boards with the locations specified
+	 */
+	public Board[] getBoards(Location[] locations)
+	{
+		List<Board> boards = new ArrayList<>();
+		for(Location l : locations) boards.add(this.getBoard(l));
+		return (Board[]) boards.toArray();
+	}
+	
+	/**Clones the field
+	 * All objects within it should be unique and immutable from the original field.
+	 */
+	public Field clone()
+	{
+		Field field = new Field();
+		
+		// copying all fields
+		for(int c = 0; c < Field.field_size; c++) for(int r = 0; r < Field.field_size; r++) field.boards[c][r] = this.boards[c][r].clone();
+		field.selected_board = this.selected_board;
+		field.current_turn = this.current_turn;
+		
+		return field;
 	}
 }

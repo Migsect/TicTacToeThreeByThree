@@ -3,15 +3,27 @@ package TicTacToe.Agent;
 import java.util.ArrayList;
 import java.util.List;
 
-import TicTacToe.Board.Board;
 import TicTacToe.Board.Field;
 
 public class Decision
 {
 	private static final double CHILD_IMPACT = 0.5;
 	
+	/**Gets all the decisions that are possible for the current player of the field
+	 * Th
+	 * 
+	 * @param field
+	 * @return
+	 */
+	private static Decision[] getDecisions(Field field)
+	{
+		// TODO
+		return null;
+	}
+	
 	private final Field field; // The field that the decision will be made on
-	private final Field.Move move; // The move that the decision will make
+	private final Field next_field; // The field state that will be made after the decision has been made
+	private final Field.Move move; // The move that the decision will make, this is not reprented in the referred field
 	List<Impact> impact_calculators = new ArrayList<>();
 	
 	/**Constructs a decision based upon the move and the field
@@ -23,27 +35,15 @@ public class Decision
 	{
 		this.field = field;
 		this.move = move;
+		
+		// getting the next field from a clone of the current field
+		this.next_field = this.field.clone().makeMove(move);
 	}
 	/**Generates the decisions that the opponent will have after this decision is made.
 	 * 
+	 * @return an array of the decisions an opponent can make after this move was made
 	 */
-	private Decision[] getOpponentDecisions()
-	{
-		List<Board> boards = new ArrayList<>();
-		Board selected_board = field.getBoard();
-		if(selected_board == null)
-		{
-			
-		}
-		else boards.add(selected_board);
-		
-		// Looping through the boards to generate moves
-		for(Board b : boards)
-		{
-			
-		}
-		return null;
-	}
+	private Decision[] getOpponentDecisions(){return Decision.getDecisions(this.next_field);}
 	
 	/**This calculates the impact that the decision will cause
 	 * 
@@ -62,7 +62,7 @@ public class Decision
 	public double getOpponentDecisionImpact(int steps)
 	{
 		double sum = 0;
-		for(Decision d : this.getOpponentDecisions())sum += d.getImpact(steps);
+		for(Decision d : this.getOpponentDecisions()) sum += d.getImpact(steps);
 		return sum;
 	}
 	/**Gets the impact of the decision n-steps into the future
