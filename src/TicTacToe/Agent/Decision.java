@@ -3,6 +3,9 @@ package TicTacToe.Agent;
 import java.util.ArrayList;
 import java.util.List;
 
+import TicTacToe.Board.Board;
+import TicTacToe.Board.Board.Location;
+import TicTacToe.Board.Board.Mark;
 import TicTacToe.Board.Field;
 
 public class Decision
@@ -10,21 +13,43 @@ public class Decision
 	private static final double CHILD_IMPACT = 0.5;
 	
 	/**Gets all the decisions that are possible for the current player of the field
-	 * Th
 	 * 
 	 * @param field
 	 * @return
 	 */
-	private static Decision[] getDecisions(Field field)
+	public static Decision[] getDecisions(Field field)
 	{
-		// TODO
-		return null;
+		// Creating the decissions
+		List<Decision> decisions = new ArrayList<>();
+		
+		// Getting the boards that can have moves be made on.
+		List<Location> boards = new ArrayList<>();
+		if(field.getSelected() == 0) for(Location l : field.getCompleteBoardLocations())boards.add(l);
+		else boards.add(new Location(field.getSelectedColumn(), field.getSelectedRow()));
+		
+		for(Location board_l : boards)
+		{
+			// Getting the board
+			Board board = field.getBoard(board_l);
+			Mark current_turn = field.getTurn();
+			// Generating decisions for all the empty locations on the board
+			for(Location empty_l : board.getEmptyLocations())
+			{
+				Board.Move b_move = new Board.Move(current_turn, empty_l);
+				Field.Move f_move = new Field.Move(b_move, board_l);
+				Decision descision = new Decision(field, f_move);
+				decisions.add(descision);
+			}
+		}
+		
+		// Returning the decissions as an array
+		return (Decision[]) decisions.toArray();
 	}
 	
 	private final Field field; // The field that the decision will be made on
 	private final Field next_field; // The field state that will be made after the decision has been made
 	private final Field.Move move; // The move that the decision will make, this is not reprented in the referred field
-	List<Impact> impact_calculators = new ArrayList<>();
+	List<Impact> impact_calculators = new ArrayList<>(); // A lis
 	
 	/**Constructs a decision based upon the move and the field
 	 * 
@@ -75,4 +100,20 @@ public class Decision
 		if(steps == 0) return this.getImpact(); // only the impact of the calculators
 		else return this.getImpact() * (1 - Decision.CHILD_IMPACT) - this.getOpponentDecisionImpact(steps - 1) * (Decision.CHILD_IMPACT);
 	}
+	
+	/**Returns the field that this decision will make a move on
+	 * 
+	 * @return The field
+	 */
+	public Field getField(){return this.field;}
+	/**Returns the next field if this decision would be made
+	 * 
+	 * @return A field if the move this decission is deciding on
+	 */
+	public Field getNextField(){return this.next_field;}
+	/**Returns the move that this decission is deciding on
+	 * 
+	 * @return
+	 */
+	public Field.Move getMove(){return this.move;}
 }
