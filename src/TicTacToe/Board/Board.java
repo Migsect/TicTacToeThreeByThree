@@ -446,7 +446,7 @@ public class Board
 	public Location[] getEmptyLocations()
 	{
 		List<Location> empty = new ArrayList<>();
-		for(int r = 0; r < Board.BOARD_SIZE; r++) for(int c = 0; c < Board.BOARD_SIZE; c++){if(!this.has(c, r)) empty.add(new Location(c,r))};	
+		for(int r = 0; r < Board.BOARD_SIZE; r++) for(int c = 0; c < Board.BOARD_SIZE; c++){if(!this.has(c, r)) empty.add(new Location(c,r));}	
 		return empty.toArray(new Location[empty.size()]);	
 	}
 }
