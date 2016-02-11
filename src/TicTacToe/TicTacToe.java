@@ -3,6 +3,7 @@ package TicTacToe;
 import java.util.List;
 import java.util.Scanner;
 
+import TicTacToe.Agent.Agent;
 import TicTacToe.Board.Board;
 import TicTacToe.Board.Board.Mark;
 import TicTacToe.Board.Field;
@@ -42,10 +43,12 @@ public class TicTacToe
 		// creating the field and setting the selected board
 		Field field = new Field();
 		field.select(5);
+		field.setTurn(Mark.X);
 		
-		// Whoever starts first
-		Mark turn = Mark.X;
+		// Creating the Agent AI
+		Agent agent = new Agent(Mark.O, 2);
 		
+		// Getting the stuff
 		String line_input = "";
 		boolean bad_input = false;
 		boolean bad_move = false;
@@ -57,7 +60,7 @@ public class TicTacToe
 			if(bad_input) System.out.println("Sorry, please enter a move between 1 and 9. Enter 0 to exit."); 
 			else if(bad_move) System.out.println("Sorry, you cannot make that move.");
 			else System.out.println();
-			System.out.print("It is " + turn.getDisplay() + "'s turn. ");
+			System.out.print("It is " + field.getTurn().getDisplay() + "'s turn. ");
 			if(field.getSelected() == 0) System.out.println("  Please select a board...");
 			else System.out.println("  Please select a spot...");
 			
@@ -95,10 +98,10 @@ public class TicTacToe
 					continue;
 				}
 				// setting the board's element
-				board.set(select, turn);
+				board.set(select, field.getTurn());
 				// swapping turns
-				if(turn == Mark.X) turn = Mark.O;
-				else turn = Mark.X;
+				field.setTurn(field.getTurn().getOpposite());
+				
 				// selecting the next board
 				Board next_board = field.getBoard(select);
 				if(next_board.isComplete()) field.select(0);
@@ -112,6 +115,14 @@ public class TicTacToe
 				System.out.println("Player " + field.getWinner().getDisplay() + " is the winner!");
 				break;
 			}
+			
+			// Time for the AI to decide
+			Field.Move move = agent.decide(field);
+			field.makeMove(move);
+			
+			// Displaying the final state of the field
+			printLines(field.toStringList());
+			System.out.println(move.toString());
 			
 		}
 		

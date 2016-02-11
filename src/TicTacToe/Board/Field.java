@@ -17,6 +17,7 @@ public class Field
 		public Move(Board.Move move, Board.Location loc){this.loc = loc; this.move = move;}
 		public Board.Location getLocation(){return loc;}
 		public Board.Move getMove(){return move;}
+		public String toString(){return "{" + loc.toString() + " : " + move.toString() + "}";}
 	}
 	
 	private static final int field_size = 3;
@@ -281,7 +282,7 @@ public class Field
 		
 		for(int c = 0; c < Field.field_size; c++) for(int r = 0; r < Field.field_size; r++) boards.add(new Board.Location(c, r));
 		
-		return (Location[])boards.toArray();
+		return boards.toArray(new Location[boards.size()]);
 	}
 	
 	/**Returns all the board locations that are completed.
@@ -294,7 +295,7 @@ public class Field
 		
 		for(Location l : this.getBoardLocations()) if(this.getBoard(l.getCol(), l.getRow()).isComplete()) boards.add(l);
 		
-		return (Location[])boards.toArray();
+		return boards.toArray(new Location[boards.size()]);
 	}
 	
 	/**Returns all the board locations that are still incomplete
@@ -307,7 +308,7 @@ public class Field
 		
 		for(Location l : this.getBoardLocations()) if(!this.getBoard(l.getCol(), l.getRow()).isComplete()) boards.add(l);
 		
-		return (Location[])boards.toArray();
+		return boards.toArray(new Location[boards.size()]);
 	}
 	
 	/**Gets all the boards in the field
@@ -325,7 +326,7 @@ public class Field
 	{
 		List<Board> boards = new ArrayList<>();
 		for(Location l : locations) boards.add(this.getBoard(l));
-		return (Board[]) boards.toArray();
+		return boards.toArray(new Board[boards.size()]);
 	}
 	
 	/**Clones the field

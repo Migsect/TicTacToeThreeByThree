@@ -24,7 +24,7 @@ public class Decision
 		
 		// Getting the boards that can have moves be made on.
 		List<Location> boards = new ArrayList<>();
-		if(field.getSelected() == 0) for(Location l : field.getCompleteBoardLocations())boards.add(l);
+		if(field.getSelected() == 0) for(Location l : field.getIncompleteBoardLocations()) boards.add(l);
 		else boards.add(new Location(field.getSelectedColumn(), field.getSelectedRow()));
 		
 		for(Location board_l : boards)
@@ -43,7 +43,7 @@ public class Decision
 		}
 		
 		// Returning the decissions as an array
-		return (Decision[]) decisions.toArray();
+		return decisions.toArray(new Decision[decisions.size()]);
 	}
 	
 	private final Field field; // The field that the decision will be made on
@@ -77,18 +77,24 @@ public class Decision
 	public double getImpact()
 	{
 		double sum = 0;
-		for(Impact i : impact_calculators) sum += i.calculate(field, move);
+		for(Impact i : impact_calculators) sum += i.calculate(this);
 		return sum;
 	}
 	/**Gets the impact of the opponent's decisions
+	 * This is an average of the impact of all the devisions an opponent can make
+	 * If the opponent cannot make any decisions, it returns 0;
 	 * 
 	 * @return
 	 */
 	public double getOpponentDecisionImpact(int steps)
 	{
 		double sum = 0;
-		for(Decision d : this.getOpponentDecisions()) sum += d.getImpact(steps);
-		return sum;
+		
+		Decision[] opponent_decisions = this.getOpponentDecisions();
+		if(opponent_decisions.length == 0) return 0;
+		for(Decision d : opponent_decisions) sum += d.getImpact(steps);
+		
+		return sum / opponent_decisions.length;
 	}
 	/**Gets the impact of the decision n-steps into the future
 	 * 

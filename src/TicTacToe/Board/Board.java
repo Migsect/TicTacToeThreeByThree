@@ -55,6 +55,7 @@ public class Board
 		public Location(int row, int col){this.row = row; this.col = col;}
 		public int getRow(){return row;}
 		public int getCol(){return col;}
+		public String toString(){return "(" + col + ", " + row + ")";}
 	}
 	/**Move objects allow moves that change to board to be categorized as an object
 	 */
@@ -66,6 +67,7 @@ public class Board
 		public Move(Mark m, int c, int r){this.m = m; this.l = new Location(c,r);}
 		public Mark getMark(){return m;}
 		public Location getLocation(){return l;}
+		public String toString(){return "[" + l.toString() + " : " + m.toString() + "]";}
 	}
 	
 	private static final int BOARD_SIZE = 3;
@@ -73,6 +75,12 @@ public class Board
 	private static final char V_SEPERATOR = '|';
 	private static final int EDGE_SPACING = 1;
 	private Mark[][] places = new Mark[BOARD_SIZE][BOARD_SIZE];
+	
+	/**Returns the board size of all boards
+	 * 
+	 * @return The board size
+	 */
+	public static int boardSize(){return Board.BOARD_SIZE;}
 	
 	/**Returns the length of the board's display with its edge spacing.
 	 * 
@@ -418,7 +426,7 @@ public class Board
 		{
 			if(this.set(new Move(m, l)).getWinner().equals(m)) winning.add(l);
 		}
-		return (Location[])winning.toArray();
+		return winning.toArray(new Location[winning.size()]);
 	}
 	/**Gets the winning moves that either player can make
 	 * 
@@ -429,7 +437,7 @@ public class Board
 		List<Move> winning = new ArrayList<>();
 		for(Location l : this.getWinningLocations(Mark.X)) winning.add(new Move(Mark.X, l));
 		for(Location l : this.getWinningLocations(Mark.O)) winning.add(new Move(Mark.O, l));
-		return (Move[])winning.toArray();
+		return winning.toArray(new Move[winning.size()]);	
 	}
 	/**Returns an array of all the empty locations that a mark can be placed in
 	 * 
@@ -438,7 +446,7 @@ public class Board
 	public Location[] getEmptyLocations()
 	{
 		List<Location> empty = new ArrayList<>();
-		for(int r = 0; r < Board.BOARD_SIZE; r++) for(int c = 0; c < Board.BOARD_SIZE; c++) if(!this.has(c, r)) empty.add(new Location(c,r));	
-		return (Location[])empty.toArray();	
+		for(int r = 0; r < Board.BOARD_SIZE; r++) for(int c = 0; c < Board.BOARD_SIZE; c++){if(!this.has(c, r)) empty.add(new Location(c,r))};	
+		return empty.toArray(new Location[empty.size()]);	
 	}
 }
