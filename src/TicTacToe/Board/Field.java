@@ -17,7 +17,7 @@ public class Field
 		public Move(Board.Move move, Board.Location loc){this.loc = loc; this.move = move;}
 		public Board.Location getLocation(){return loc;}
 		public Board.Move getMove(){return move;}
-		public String toString(){return "{" + loc.toString() + " : " + move.toString() + "}";}
+		public String toString(){return "{l-" + loc.toString() + " : m-" + move.toString() + "}";}
 	}
 	
 	private static final int field_size = 3;
@@ -190,10 +190,8 @@ public class Field
 	 */
 	public Field()
 	{
-		for(int c = 0; c < field_size; c++) 
-		{
-			for(int r = 0; r < field_size; r++) this.boards[c][r] = new Board();
-		}
+		for(int c = 0; c < field_size; c++) for(int r = 0; r < field_size; r++) this.boards[c][r] = new Board();
+		
 	}
 	
 	/**Converts the field into displayable a string list
@@ -224,7 +222,7 @@ public class Field
 			cells[c][r] = select_space_board;
 		}
 
-		int cell_size = Field.SELECT_SPACING * 2 + Board.boardLength();
+		int cell_size = Field.SELECT_SPACING * 2 + Board.boardDisplaySize();
 		int field_size = Field.field_size * cell_size  + Field.field_size - 1;
 		TextPicture field = new TextPicture(field_size, field_size);
 		// adding the cells to their locations

@@ -80,6 +80,7 @@ public class Decision
 		for(Impact i : impact_calculators) sum += i.calculate(this);
 		return sum;
 	}
+	
 	/**Gets the impact of the opponent's decisions
 	 * This is an average of the impact of all the devisions an opponent can make
 	 * If the opponent cannot make any decisions, it returns 0;

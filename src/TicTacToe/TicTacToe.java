@@ -124,6 +124,7 @@ public class TicTacToe
 			printLines(field.toStringList());
 			System.out.println(move.toString());
 			
+			
 		}
 		
 		scanner.close();

@@ -55,7 +55,7 @@ public class Board
 		public Location(int row, int col){this.row = row; this.col = col;}
 		public int getRow(){return row;}
 		public int getCol(){return col;}
-		public String toString(){return "(" + col + ", " + row + ")";}
+		public String toString(){return "(c" + col + ", r" + row + ")";}
 	}
 	/**Move objects allow moves that change to board to be categorized as an object
 	 */
@@ -67,7 +67,7 @@ public class Board
 		public Move(Mark m, int c, int r){this.m = m; this.l = new Location(c,r);}
 		public Mark getMark(){return m;}
 		public Location getLocation(){return l;}
-		public String toString(){return "[" + l.toString() + " : " + m.toString() + "]";}
+		public String toString(){return "[l-" + l.toString() + " : mk-" + m.toString() + "]";}
 	}
 	
 	private static final int BOARD_SIZE = 3;
@@ -86,7 +86,7 @@ public class Board
 	 * 
 	 * @return The length of a displayed board
 	 */
-	public static int boardLength(){return 2*BOARD_SIZE + 2*EDGE_SPACING - 1;}
+	public static int boardDisplaySize(){return 2*BOARD_SIZE + 2*EDGE_SPACING - 1;}
 	
 	/**Returns the collapsed text picture of the board with the mark m
 	 * 
@@ -95,7 +95,7 @@ public class Board
 	 */
 	private static TextPicture getCollapsedPicture(Mark m)
 	{
-		int picture_side = boardLength();
+		int picture_side = boardDisplaySize();
 	  TextPicture picture = new TextPicture(picture_side, picture_side);
 	  for(int r = EDGE_SPACING; r < BOARD_SIZE + 2*EDGE_SPACING + 1; r++) for(int c = EDGE_SPACING; c < BOARD_SIZE + 2*EDGE_SPACING + 1; c++)
 	  {
@@ -103,6 +103,18 @@ public class Board
 	  }
 	  
 	  return picture;
+	}
+	
+	/**Returns a board filled with the marks m
+	 * 
+	 * @param m The mark to fill the board with
+	 * @return The board
+	 */
+	public static Board getFilledBoard(Mark m)
+	{
+		Board board = new Board();
+		for(int c = 0; c < Board.BOARD_SIZE; c++) for(int r = 0; r < Board.BOARD_SIZE; r++) board.set(c, r, m);
+		return board;
 	}
 	
 	/**Sets a mark on the board to the location
@@ -113,18 +125,21 @@ public class Board
 	 * @return The board
 	 */
 	public Board set(int c, int r, Mark m){this.places[c % BOARD_SIZE][r % BOARD_SIZE] = m; return this;}
+	
 	/**Befores the move on the board
 	 * 
 	 * @param move The move
 	 * @return The board that the move was enacted on
 	 */
 	public Board set(Move move){return this.set(move.getLocation().getCol(), move.getLocation().getRow(), move.getMark());}
+	
 	/**Checks to see if the move can be made
 	 * 
 	 * @param move The move to see if can be made
 	 * @return True if the move can be made (the spot is empty)
 	 */
 	public boolean can(Move move){return this.has(move.getLocation().getCol(), move.getLocation().getRow());}
+	
 	/**Gets the mark at a location on the board
 	 * 
 	 * @param c The column
@@ -132,13 +147,15 @@ public class Board
 	 * @return The mark
 	 */
 	public Mark get(int c, int r){return this.places[c % BOARD_SIZE][r % BOARD_SIZE];}
+	
 	/**Returns whether or not this board has a mark in the place
 	 * 
 	 * @param c The column
 	 * @param r The row
 	 * @return True if there is a mark in the place
 	 */
-	public boolean has(int c, int r){return !this.get(c,r).equals(Mark.EMPTY);}
+	public boolean has(int c, int r){return !this.get(c, r).equals(Mark.EMPTY);}
+	
 	/**Sets a mark based on the board's index (1 to size*size)
 	 * 
 	 * @param x The index
@@ -146,12 +163,14 @@ public class Board
 	 * @return The board
 	 */
 	public Board set(int x, Mark m){this.set((x-1) % BOARD_SIZE, (x-1) / BOARD_SIZE, m); return this;}
+	
 	/**Gets a mark based on the inputted index (1 to size*size)
 	 * 
 	 * @param x The index
 	 * @return The mark
 	 */
 	public Mark get(int x){return this.get((x-1) % BOARD_SIZE, (x-1) / BOARD_SIZE);}
+	
 	/**Returns whether or not this board has a mark in the place
 	 * 
 	 * @param x The index
@@ -252,7 +271,7 @@ public class Board
 	 */
 	public TextPicture toPicture()
 	{
-		int picture_side = boardLength();
+		int picture_side = boardDisplaySize();
 	  TextPicture picture = new TextPicture(picture_side, picture_side);
 	  // drawing the marks
 	  for(int r = 0; r < BOARD_SIZE; r++) for(int c = 0; c < BOARD_SIZE; c++)
@@ -349,6 +368,7 @@ public class Board
 		for(Mark[] marks : this.places) for(Mark m : marks) sum += m.getValue();
 		return sum;
 	}
+	
 	/**Counts the number of non-empty marks in the board
 	 * 
 	 * @return The number of non-empty marks
@@ -370,7 +390,7 @@ public class Board
 		for(int r = 0; r < Board.BOARD_SIZE; r++) for(int c = 0; c < Board.BOARD_SIZE; c++)
 		{
 			if(this.has(c, r)) continue;
-			if(this.clone().set(r, c, m).getWinner().equals(m)) return true;
+			if(this.clone().set(c, r, m).getWinner().equals(m)) return true;
 		}
 		return false;
 	}
@@ -401,6 +421,7 @@ public class Board
 		if(Math.abs(this.count() + 1) == Board.BOARD_SIZE * Board.BOARD_SIZE) return true;
 		return false;
 	}
+	
 	/**Checks to see if using the mark can complete by placing up to moves marks
 	 * 
 	 * @param m The mark
@@ -413,6 +434,7 @@ public class Board
 		if(Math.abs(this.count() + moves) == Board.BOARD_SIZE * Board.BOARD_SIZE) return true;
 		return false;
 	}
+	
 	/**Get the winning locations for the mark
 	 * 
 	 * @param m The mark
@@ -446,7 +468,7 @@ public class Board
 	public Location[] getEmptyLocations()
 	{
 		List<Location> empty = new ArrayList<>();
-		for(int r = 0; r < Board.BOARD_SIZE; r++) for(int c = 0; c < Board.BOARD_SIZE; c++){if(!this.has(c, r)) empty.add(new Location(c,r));}	
+		for(int r = 0; r < Board.BOARD_SIZE; r++) for(int c = 0; c < Board.BOARD_SIZE; c++){if(!this.has(c, r)) empty.add(new Location(c, r));}	
 		return empty.toArray(new Location[empty.size()]);	
 	}
 }
