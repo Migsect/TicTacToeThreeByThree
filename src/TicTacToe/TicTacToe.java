@@ -47,9 +47,14 @@ public class TicTacToe
 		field.setTurn(Mark.X);
 		
 		// Creating the Agent AI
-		Agent agent = new Agent(Mark.O, 4);
+		Agent agent = new Agent(Mark.O, 5);
 		// Adding the agents impact calculators
-		agent.addImpact(Impact.doesWinImpact());
+		agent.addImpact(Impact.doesComplete(100, 2));
+		agent.addImpact(Impact.doesSelectComplete(-100));
+		agent.addImpact(Impact.doesWinImpact(1000));
+		
+		// flag for an ai fight
+		boolean ai_vs_ai = false;
 		
 		// Getting the stuff
 		String line_input = "";
@@ -57,69 +62,81 @@ public class TicTacToe
 		boolean bad_move = false;
 		while(!line_input.equals("0"))
 		{
-			//printLines(field.getInformation());
-			//printLines(field.getBoard().getInformation());
-			printLines(field.toStringList());
-			if(bad_input) System.out.println("Sorry, please enter a move between 1 and 9. Enter 0 to exit."); 
-			else if(bad_move) System.out.println("Sorry, you cannot make that move.");
-			else System.out.println();
-			System.out.print("It is " + field.getTurn().getDisplay() + "'s turn. ");
-			if(field.getSelected() == 0) System.out.println("  Please select a board...");
-			else System.out.println("  Please select a spot...");
-			
-			// Reading the input
-			line_input = scanner.nextLine();
-			int input = -1;
-			try{input = Integer.parseInt(line_input);}catch(NumberFormatException e){;}
-			
-			// Responding to the input
-			if(input == 0) break;
-			if(input == -1 || input < 0 || input > 9)
+			if(!ai_vs_ai)
 			{
-				bad_input = true;
-				continue;
-			} else bad_input = false;
-			
-			int select = inputToIndex(input);
-			if(field.getSelected() == 0)
-			{
-				Board next_board = field.getBoard(select);
-				if(next_board.isComplete())
-				{
-					bad_move = true;
-					continue;
-				}
-				field.select(select);
+  			//printLines(field.getInformation());
+  			//printLines(field.getBoard().getInformation());
+  			printLines(field.toStringList());
+  			if(bad_input) System.out.println("Sorry, please enter a move between 1 and 9. Enter 0 to exit."); 
+  			else if(bad_move) System.out.println("Sorry, you cannot make that move.");
+  			else System.out.println();
+  			System.out.print("It is " + field.getTurn().getDisplay() + "'s turn. ");
+  			if(field.getSelected() == 0) System.out.println("  Please select a board...");
+  			else System.out.println("  Please select a spot...");
+  			
+  			// Reading the input
+  			line_input = scanner.nextLine();
+  			int input = -1;
+  			try{input = Integer.parseInt(line_input);}catch(NumberFormatException e){;}
+  			
+  			// Responding to the input
+  			if(input == 0) break;
+  			if(input == -1 || input < 0 || input > 9)
+  			{
+  				bad_input = true;
+  				continue;
+  			} else bad_input = false;
+  			
+  			int select = inputToIndex(input);
+  			if(field.getSelected() == 0)
+  			{
+  				Board next_board = field.getBoard(select);
+  				if(next_board.isComplete())
+  				{
+  					bad_move = true;
+  					continue;
+  				}
+  				field.select(select);
+  			}
+  			else
+  			{
+  				Board board = field.getBoard();
+  				// Checking to see if the move is legal
+  				if(board.get(select) != Mark.EMPTY)
+  				{
+  					bad_move = true;
+  					continue;
+  				}
+  				// setting the board's element
+  				board.set(select, field.getTurn());
+  				// swapping turns
+  				field.setTurn(field.getTurn().getOpposite());
+  				
+  				// selecting the next board
+  				Board next_board = field.getBoard(select);
+  				if(next_board.isComplete()) field.select(0);
+  				else field.select(select);
+  				
+  				// Displaying the board after the player makes their move
+  				printLines(field.toStringList());
+  				
+  				// Time for the AI to decide
+  				Field.Move move = agent.decide(field);
+  				field.makeMove(move);
+  				
+  				// Displaying the AI's move
+  				System.out.println(move.toString());
+  			}
 			}
 			else
 			{
-				Board board = field.getBoard();
-				// Checking to see if the move is legal
-				if(board.get(select) != Mark.EMPTY)
-				{
-					bad_move = true;
-					continue;
-				}
-				// setting the board's element
-				board.set(select, field.getTurn());
-				// swapping turns
-				field.setTurn(field.getTurn().getOpposite());
-				
-				// selecting the next board
-				Board next_board = field.getBoard(select);
-				if(next_board.isComplete()) field.select(0);
-				else field.select(select);
-				
 				// Displaying the board after the player makes their move
 				printLines(field.toStringList());
 				
 				// Time for the AI to decide
-				Field.Move move = agent.decide(field);
-				field.makeMove(move);
-				
-				// Displaying the AI's move
-				System.out.println(move.toString());
-				
+				Field.Move a_move = agent.decide(field);
+				System.out.println(a_move.toString());
+				field.makeMove(a_move);
 			}
 			
 			// Win check
@@ -129,6 +146,15 @@ public class TicTacToe
 				printLines(field.toStringList());
 				// Saying who won!
 				System.out.println("Player " + field.getWinner().getDisplay() + " is the winner!");
+				break;
+			}
+			// Tie check
+			if(field.isComplete())
+			{
+				// Displaying the final state of the field
+				printLines(field.toStringList());
+				// Saying who won!
+				System.out.println("It'sa tie!");
 				break;
 			}
 			

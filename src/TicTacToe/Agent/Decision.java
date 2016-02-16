@@ -17,7 +17,7 @@ public class Decision
 	 * @param field
 	 * @return
 	 */
-	public static Decision[] getDecisions(Field field)
+	public static Decision[] getDecisions(Field field, List<Impact> impacts)
 	{
 		// Creating the decissions
 		List<Decision> decisions = new ArrayList<>();
@@ -38,6 +38,7 @@ public class Decision
 				Board.Move b_move = new Board.Move(current_turn, empty_l);
 				Field.Move f_move = new Field.Move(b_move, board_l);
 				Decision descision = new Decision(field, f_move);
+				descision.impact_calculators.addAll(impacts);
 				decisions.add(descision);
 			}
 		}
@@ -68,7 +69,7 @@ public class Decision
 	 * 
 	 * @return an array of the decisions an opponent can make after this move was made
 	 */
-	private Decision[] getOpponentDecisions(){return Decision.getDecisions(this.next_field);}
+	private Decision[] getOpponentDecisions(){return Decision.getDecisions(this.next_field, this.impact_calculators);}
 	
 	/**This calculates the impact that the decision will cause
 	 * 
