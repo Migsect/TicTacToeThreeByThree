@@ -74,6 +74,7 @@ public class Board
 	private static final char H_SEPERATOR = '=';
 	private static final char V_SEPERATOR = '|';
 	private static final int EDGE_SPACING = 1;
+	
 	private Mark[][] places = new Mark[BOARD_SIZE][BOARD_SIZE];
 	
 	/**Returns the board size of all boards
@@ -103,6 +104,28 @@ public class Board
 	  }
 	  
 	  return picture;
+	}
+	
+	public static boolean isCorner(Location l)
+	{
+		int col = l.getCol();
+		int row = l.getRow();
+		
+		if(col == 0 && row == 0) return true;
+		if(col == Board.BOARD_SIZE && row == 0) return true;
+		if(col == 0 && row == Board.BOARD_SIZE) return true;
+		if(col == Board.BOARD_SIZE && row == Board.BOARD_SIZE) return true;
+		
+		return false;
+	}
+	public static boolean isMiddle(Location l)
+	{
+		if(l.getCol() == Board.BOARD_SIZE / 2 && l.getRow() == Board.BOARD_SIZE / 2) return true;
+		else return false;
+	}
+	public static boolean isEdge(Location l)
+	{
+		return !Board.isMiddle(l) && !Board.isCorner(l);
 	}
 	
 	/**Returns a board filled with the marks m

@@ -32,6 +32,8 @@ public interface Impact
 		Board board = field.getBoard(move.getLocation());
 		Location board_l = move.getMove().getLocation();
 		
+		
+		
 		return 0;
 	}};}
 	

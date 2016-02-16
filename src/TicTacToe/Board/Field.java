@@ -192,7 +192,6 @@ public class Field
 	public Field()
 	{
 		for(int c = 0; c < field_size; c++) for(int r = 0; r < field_size; r++) this.boards[c][r] = new Board();
-		
 	}
 	
 	/**Converts the field into displayable a string list
