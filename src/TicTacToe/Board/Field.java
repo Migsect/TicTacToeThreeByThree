@@ -48,6 +48,7 @@ public class Field
 		this.current_turn = this.current_turn.getOpposite();
 		// Updating the selected board
 		this.select(move.getMove().getLocation().getCol(), move.getMove().getLocation().getRow());
+		if(this.getBoard(this.getSelected()).isComplete()) this.select(0); 
 		
 		// Returning this field
 		return this;

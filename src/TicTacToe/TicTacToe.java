@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import TicTacToe.Agent.Agent;
+import TicTacToe.Agent.Impact;
 import TicTacToe.Board.Board;
 import TicTacToe.Board.Board.Mark;
 import TicTacToe.Board.Field;
@@ -46,7 +47,9 @@ public class TicTacToe
 		field.setTurn(Mark.X);
 		
 		// Creating the Agent AI
-		Agent agent = new Agent(Mark.O, 2);
+		Agent agent = new Agent(Mark.O, 4);
+		// Adding the agents impact calculators
+		agent.addImpact(Impact.doesWinImpact());
 		
 		// Getting the stuff
 		String line_input = "";
@@ -106,7 +109,20 @@ public class TicTacToe
 				Board next_board = field.getBoard(select);
 				if(next_board.isComplete()) field.select(0);
 				else field.select(select);
+				
+				// Displaying the board after the player makes their move
+				printLines(field.toStringList());
+				
+				// Time for the AI to decide
+				Field.Move move = agent.decide(field);
+				field.makeMove(move);
+				
+				// Displaying the AI's move
+				System.out.println(move.toString());
+				
 			}
+			
+			// Win check
 			if(!field.getWinner().equals(Mark.EMPTY))
 			{
 				// Displaying the final state of the field
@@ -116,13 +132,6 @@ public class TicTacToe
 				break;
 			}
 			
-			// Time for the AI to decide
-			Field.Move move = agent.decide(field);
-			field.makeMove(move);
-			
-			// Displaying the final state of the field
-			printLines(field.toStringList());
-			System.out.println(move.toString());
 			
 			
 		}
