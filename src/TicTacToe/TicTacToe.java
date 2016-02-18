@@ -49,9 +49,10 @@ public class TicTacToe
 		// Creating the Agent AI
 		Agent agent = new Agent(Mark.O, 5);
 		// Adding the agents impact calculators
-		agent.addImpact(Impact.doesComplete(100, 2));
-		agent.addImpact(Impact.doesSelectComplete(-100));
-		agent.addImpact(Impact.doesWinImpact(1000));
+		agent.addImpact(Impact.doesComplete(64, 2));
+		agent.addImpact(Impact.doesSelectComplete(-64));
+		agent.addImpact(Impact.doesWinImpact(256));
+		agent.addImpact(Impact.doesPlaceNextToSame(64));
 		
 		// flag for an ai fight
 		boolean ai_vs_ai = false;

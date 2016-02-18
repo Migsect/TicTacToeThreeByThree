@@ -50,12 +50,82 @@ public class Board
 	 */
 	public static class Location
 	{
+		public enum Direction
+		{
+			UP					(0,		-1	),
+			DOWN				(0,		1		), 
+			LEFT				(-1,	0		), 
+			RIGHT				(1,		0		), 
+			UP_LEFT			(-1,	-1	), 
+			UP_RIGHT		(1,		-1	), 
+			DOWN_LEFT		(-1,	1		), 
+			DOWN_RIGHT	(1,		1		);
+			
+			private final int delta_x;
+			private final int delta_y;
+			
+			Direction(int delta_x, int delta_y)
+			{
+				this.delta_x = delta_x; 
+				this.delta_y = delta_y;
+			}
+			public int getDeltaX(){return this.delta_x;}
+			public int getDeltaY(){return this.delta_y;}
+			
+			public static Direction[] getOrthagonal()
+			{
+				return new Direction[]{Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT};
+			}
+			public static Direction[] getDiagonal()
+			{
+				return new Direction[]{Direction.UP_LEFT, Direction.UP_RIGHT, Direction.DOWN_LEFT, Direction.DOWN_RIGHT};
+			}
+			
+		}
 		private final int row;
 		private final int col;
 		public Location(int col, int row){this.row = row; this.col = col;}
 		public int getRow(){return row;}
 		public int getCol(){return col;}
 		public String toString(){return "(c" + col + ", r" + row + ")";}
+		public boolean isValid()
+		{
+			if(row > Board.BOARD_SIZE || row < 0) return false;
+			if(col > Board.BOARD_SIZE || col < 0) return false;
+			return true;
+		}
+		
+		/**Gets the location in the direction
+		 * Returns null if the location cannot be in a board
+		 * 
+		 * @param d The direction to derive from the location
+		 * @return A location
+		 */
+		public Location get(Direction d)
+		{
+			int x = this.getCol() + d.getDeltaX();
+			int y = this.getRow() + d.getDeltaY();
+			if(x > Board.BOARD_SIZE || x < 0) return null;
+			if(y > Board.BOARD_SIZE || y < 0) return null;
+			return new Location(x, y);
+		}
+		
+		/**Returns the surrounding locations of this location
+		 * Ignores any invalid location as defined by "isValid()"
+		 * 
+		 * @param directions an array of directions to pull from
+		 * @return An array of surrounding locations
+		 */
+		public Location[] get(Direction[] directions)
+		{
+			List<Location> locations = new ArrayList<>();
+			for(Direction d : directions)
+			{
+				Location l = this.get(d);
+				if(l != null) locations.add(l);
+			}
+			return locations.toArray(new Location[locations.size()]);
+		}
 	}
 	/**Move objects allow moves that change to board to be categorized as an object
 	 */
@@ -170,6 +240,13 @@ public class Board
 	 * @return The mark
 	 */
 	public Mark get(int c, int r){return this.places[c % BOARD_SIZE][r % BOARD_SIZE];}
+	
+	/**Gets the mark at a location on the board
+	 * 
+	 * @param l The location
+	 * @return The mark at the location
+	 */
+	public Mark get(Location l){return this.get(l.getCol(), l.getRow());}
 	
 	/**Returns whether or not this board has a mark in the place
 	 * 

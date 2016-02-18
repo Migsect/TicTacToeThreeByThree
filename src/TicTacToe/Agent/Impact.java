@@ -2,6 +2,8 @@ package TicTacToe.Agent;
 
 import TicTacToe.Board.Board;
 import TicTacToe.Board.Board.Location;
+import TicTacToe.Board.Board.Location.Direction;
+import TicTacToe.Board.Board.Mark;
 import TicTacToe.Board.Field;
 
 public interface Impact
@@ -25,16 +27,26 @@ public interface Impact
 		return (next_complete.length - completed.length) * weight;
 	}};}
 	
-	public static Impact doesNextToSame(int weight){return new Impact(){@Override public double calculate(Decision decision){
+	/**Will return an impact that checks to see if the move will place the mark in a strategic line
+	 * 
+	 * @param weight The weight each neaby mark grants
+	 * @return The impact
+	 */
+	public static Impact doesPlaceNextToSame(int weight){return new Impact(){@Override public double calculate(Decision decision){
 		Field field = decision.getField();
 		Field.Move move = decision.getMove();
 		
 		Board board = field.getBoard(move.getLocation());
 		Location board_l = move.getMove().getLocation();
+		Mark m = move.getMove().getMark();
 		
+		int sum = 0;
+		Location[] locations = null;
+		if(Board.isEdge(board_l)) locations = board_l.get(Direction.getOrthagonal());
+		else locations = board_l.get(Direction.values());
+		for(Location l : locations) if(board.get(l).equals(m)) sum++;
 		
-		
-		return 0;
+		return sum * weight;
 	}};}
 	
 
