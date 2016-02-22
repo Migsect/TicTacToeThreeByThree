@@ -3,6 +3,7 @@ package TicTacToe;
 import java.util.Scanner;
 
 import TicTacToe.Board.Board;
+import TicTacToe.Board.Board.Mark;
 import TicTacToe.Board.Field;
 import TicTacToe.Board.Field.Move;
 
@@ -11,16 +12,18 @@ public class HumanPlayer implements Player
 	
 	public final Field current_field;
 	public final Scanner scanner;
+	public final Mark team;
 	
 	public static final String BOARD_PROMPT = "Please select a spot... [1-9] or 0 to exit";
 	public static final String FIELD_PROMPT = "Please select a board... [1-9] or 0 to exit";
 	public static final String INVALID_INPUT = "Sorry, that is not a correct input.";
 	public static final String BAD_MOVE_INPUT = "Sorry, you cannot make that move.";
 	
-	HumanPlayer(Field field, Scanner scanner)
+	HumanPlayer(Field field, Scanner scanner, Mark team)
 	{
 		this.current_field = field;
 		this.scanner = scanner;
+		this.team = team;
 	}
 	
 	public static int translateInput(int input)
@@ -43,14 +46,15 @@ public class HumanPlayer implements Player
 	@Override
 	public Field.Move getMove()
 	{
-		boolean valid_move = false;
+		int selected_board = current_field.getSelected();
+	  int selected_spot = -1;
 		
 		// Getting the first input
 		String line_input = "";
-		while(!valid_move)
+		while(selected_board < 1 || selected_board > 9 || selected_spot < 1 || selected_spot > 9)
 		{
 			// Printing out what we want
-			if(current_field.getSelected() == 0) System.out.println(HumanPlayer.FIELD_PROMPT);
+			if(selected_board == 0) System.out.println(HumanPlayer.FIELD_PROMPT);
 			else System.out.println(HumanPlayer.BOARD_PROMPT);
 			
 			// Getting the first input
@@ -71,20 +75,23 @@ public class HumanPlayer implements Player
 			input = HumanPlayer.translateInput(input);
 			
 			// Checking to see if they are selecting a bad field
-			if(current_field.getSelected() == 0 && current_field.getBoard(input).isComplete())
+			if(selected_board == 0 && current_field.getBoard(input).isComplete())
 			{
 				System.out.println(HumanPlayer.BAD_MOVE_INPUT);
 				continue;
 			}
-			if(!current_field.getBoard().get(input).equals(Board.Mark.EMPTY))
+			// Checking to see if they are making a bad move (for a board)
+			if(selected_board != 0 && !current_field.getBoard().get(input).equals(Board.Mark.EMPTY))
 			{
 				System.out.println(HumanPlayer.BAD_MOVE_INPUT);
 				continue;
 			}
 			
-			if(current_field.getSelected() == 0)
+			// Selecting a board
+			if(selected_board == 0)
 			{
 				current_field.select(input);
+				selected_board = input;
 				
 				// Redisplaying the updated field so the user can select the correct one
 				for(String s : current_field.toStringList()) System.out.println(s);
@@ -92,11 +99,19 @@ public class HumanPlayer implements Player
 			}
 			else
 			{
-				
+				selected_spot = input;
 			}
 		}
 		
-		return null;
+		Board.Location field_loc = new Board.Location(selected_board);
+		Board.Location board_loc = new Board.Location(selected_spot);
+		Board.Move b_move = new Board.Move(team, board_loc);
+		Field.Move f_move = new Field.Move(b_move, field_loc);
+		
+		return f_move;
 	}
+
+	@Override
+	public Mark getTeam(){return this.team;}
 	
 }

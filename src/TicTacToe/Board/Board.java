@@ -85,8 +85,10 @@ public class Board
 		private final int row;
 		private final int col;
 		public Location(int col, int row){this.row = row; this.col = col;}
+		public Location(int index){this.col = index % Board.BOARD_SIZE; this.row = index / Board.BOARD_SIZE;}
 		public int getRow(){return row;}
 		public int getCol(){return col;}
+		public int getIndex(){return this.col + this.row * Board.BOARD_SIZE;}
 		public String toString(){return "(c" + col + ", r" + row + ")";}
 		public boolean isValid()
 		{
