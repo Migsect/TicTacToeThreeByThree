@@ -5,9 +5,11 @@ import java.util.Scanner;
 
 import TicTacToe.Agent.Agent;
 import TicTacToe.Agent.Impact;
-import TicTacToe.Board.Board;
 import TicTacToe.Board.Board.Mark;
 import TicTacToe.Board.Field;
+import TicTacToe.Game.ComputerPlayer;
+import TicTacToe.Game.Game;
+import TicTacToe.Game.Player;
 
 public class TicTacToe
 {
@@ -47,13 +49,29 @@ public class TicTacToe
 		field.setTurn(Mark.X);
 		
 		// Creating the Agent AI
-		Agent agent = new Agent(Mark.O, 5);
+		Agent agent = new Agent(5);
 		// Adding the agents impact calculators
 		agent.addImpact(Impact.doesComplete(64, 2));
 		agent.addImpact(Impact.doesSelectComplete(-64));
 		agent.addImpact(Impact.doesWinImpact(256));
 		agent.addImpact(Impact.doesPlaceNextToSame(64));
 		
+		Player player_x = new ComputerPlayer(field, agent, Mark.X);
+		Player player_o = new ComputerPlayer(field, agent, Mark.O);
+		
+		Game game = new Game(field);
+		game.setPlayerX(player_x);
+		game.setPlayerO(player_o);
+		
+		boolean good_turn = true;
+		while(good_turn) 
+		{
+			game.display();
+			good_turn = game.turn();
+			if(game.detectWinner()) break;
+		}
+		
+		/*
 		// flag for an ai fight
 		boolean ai_vs_ai = false;
 		
@@ -162,6 +180,7 @@ public class TicTacToe
 			
 			
 		}
+		*/
 		
 		scanner.close();
 	}

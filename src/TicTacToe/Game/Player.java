@@ -1,4 +1,4 @@
-package TicTacToe;
+package TicTacToe.Game;
 
 import TicTacToe.Board.Board.Mark;
 import TicTacToe.Board.Field;

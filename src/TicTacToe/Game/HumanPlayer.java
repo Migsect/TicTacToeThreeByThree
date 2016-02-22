@@ -1,11 +1,10 @@
-package TicTacToe;
+package TicTacToe.Game;
 
 import java.util.Scanner;
 
 import TicTacToe.Board.Board;
 import TicTacToe.Board.Board.Mark;
 import TicTacToe.Board.Field;
-import TicTacToe.Board.Field.Move;
 
 public class HumanPlayer implements Player
 {
