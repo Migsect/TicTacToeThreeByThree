@@ -44,8 +44,9 @@ public class Game
 	{
 		if(field.isComplete())
 		{
+		  this.display();
 			Mark winner = field.getWinner();
-			if(winner.equals(Mark.EMPTY)) System.out.println("Player " + winner.getDisplay() + " has won!");
+			if(!winner.equals(Mark.EMPTY)) System.out.println("Player " + winner.getDisplay() + " has won!");
 			else System.out.println("Itsa Tie!");
 			return true;
 		}
